@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Container,
   Center,
@@ -16,7 +16,7 @@ import { IconAlertCircle, IconDownload} from '@tabler/icons';
 import { User, UserManager } from 'oidc-client-ts';
 import { AuthConfig } from '../helpers/config';
 
-const Auth: React.FC<{clientDetails : AuthConfig}> = ({clientDetails}) => {
+const Auth: React.FC<{clientDetails : AuthConfig, getToken: boolean}> = ({clientDetails, getToken}) => {
   // set and empty user state on initial setup.
   const [user, setUser] = useState(new User({access_token:"", token_type:"", profile: {sub:"", aud:"", exp:0, iat: 0, iss:""}}));
   // loading state
@@ -26,6 +26,15 @@ const Auth: React.FC<{clientDetails : AuthConfig}> = ({clientDetails}) => {
 
   const [hasError, setHasError] = useState(false);
 
+  console.log('client details', clientDetails)
+
+  useEffect(() => {
+    // if getToken is true, generate token
+    if ( getToken && !user.access_token){
+      console.log('get token')
+      signIn();
+    }
+  }, [ userManager ]);
 
   const signIn = async () =>{
     /**
@@ -42,6 +51,7 @@ const Auth: React.FC<{clientDetails : AuthConfig}> = ({clientDetails}) => {
       const  user = await userManager.signinPopup();
       setUser(user);
     } catch (e) {
+      console.error(e);
        setHasError(true);
     } finally {
       setIsLoading(false);

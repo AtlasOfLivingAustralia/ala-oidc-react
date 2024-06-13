@@ -131,7 +131,7 @@ const  UI: React.FC<{config: AuthConfig}> = ({config}) => {
                 </Stepper.Step>
 
                 <Stepper.Step label="Token Generation" description="Generate a JWT token">
-                    <Auth clientDetails={clientDetails()}/>
+                    <Auth clientDetails={clientDetails()} getToken={false} />
                 </Stepper.Step>
             </Stepper>
     

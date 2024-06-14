@@ -38,39 +38,37 @@ function AccessToken(): React.ReactElement {
     return { client_id: clientId, scope: scope, authority: config.authority, redirect_uri: config.redirect_uri, cognito_logout_uri: config.cognito_logout_uri, popup_post_logout_redirect_uri: config.popup_post_logout_redirect_uri }
   }
 
-  if (!loading) {
+  return (
+    <MantineProvider
+      theme={{
+        colorScheme: 'light',
+        fontFamily: 'Roboto, sans-serif',
+        headings: {
+          fontFamily: 'Lato, sans-serif',
+        },
+        primaryColor: 'rust',
+        colors: {
+          rust: [
+            '#000000',
+            '#000000',
+            '#FDEBE7',
+            '#FAC7BC',
+            '#F7A392',
+            '#F47F67',
+            '#F15B3C',
+            '#EE3711',
+            '#BE2C0E',
+            '#8F210A',
+          ],
+        },
+      }}
+      withGlobalStyles withNormalizeCSS
+    >
+      (loading) ? null : <Auth clientDetails={clientDetails()} getToken={true} />
+    </MantineProvider>
+  );
 
-    console.log('render <Auth>')
-    return (
-      <MantineProvider
-              theme={{
-                colorScheme: 'light',
-                fontFamily: 'Roboto, sans-serif',
-                headings: {
-                  fontFamily: 'Lato, sans-serif',
-                },
-                primaryColor: 'rust',
-                colors: {
-                  rust: [
-                    '#000000',
-                    '#000000',
-                    '#FDEBE7',
-                    '#FAC7BC',
-                    '#F7A392',
-                    '#F47F67',
-                    '#F15B3C',
-                    '#EE3711',
-                    '#BE2C0E',
-                    '#8F210A',
-                  ],
-                },
-              }}
-              withGlobalStyles withNormalizeCSS
-            >
-        <Auth clientDetails={clientDetails()} getToken={true} />
-      </MantineProvider>
-    );
-  }
 }
+
 
 export default AccessToken;

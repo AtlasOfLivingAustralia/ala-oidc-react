@@ -64,7 +64,7 @@ function AccessToken(): React.ReactElement {
       }}
       withGlobalStyles withNormalizeCSS
     >
-      (loading) ? null : <Auth clientDetails={clientDetails()} getToken={true} />
+      { (loading) ? null : <Auth clientDetails={clientDetails()} getToken={true} /> }
     </MantineProvider>
   );
 

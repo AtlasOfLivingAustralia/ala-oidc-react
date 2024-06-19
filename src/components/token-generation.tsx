@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Container,
   Center,
@@ -16,7 +16,7 @@ import { IconAlertCircle, IconDownload} from '@tabler/icons';
 import { User, UserManager } from 'oidc-client-ts';
 import { AuthConfig } from '../helpers/config';
 
-const Auth: React.FC<{clientDetails : AuthConfig}> = ({clientDetails}) => {
+const Auth: React.FC<{clientDetails : AuthConfig, getToken: boolean}> = ({clientDetails, getToken}) => {
   // set and empty user state on initial setup.
   const [user, setUser] = useState(new User({access_token:"", token_type:"", profile: {sub:"", aud:"", exp:0, iat: 0, iss:""}}));
   // loading state
@@ -25,7 +25,14 @@ const Auth: React.FC<{clientDetails : AuthConfig}> = ({clientDetails}) => {
   const userManager = new UserManager(clientDetails);
 
   const [hasError, setHasError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
+  useEffect(() => {
+
+    if (getToken && !user.access_token){
+      signIn();
+    }
+  }, [ ]);
 
   const signIn = async () =>{
     /**
@@ -39,9 +46,26 @@ const Auth: React.FC<{clientDetails : AuthConfig}> = ({clientDetails}) => {
     setHasError(false);
     setIsLoading(true);
     try{
-      const  user = await userManager.signinPopup();
+      const  user = await userManager.signinPopup({ 
+        popupWindowTarget: '_token_auth_popup', 
+        popupWindowFeatures: {
+          width: 992,
+          height: 680
+        }});
       setUser(user);
-    } catch (e) {
+    } catch (e: any) {
+      console.error('signin error', e.message, e);
+      switch (e.message) {
+        case 'Attempted to navigate on a disposed window':
+          setErrorMsg('Login window was blocked, please enable popups for this site and try again.');
+          break; 
+          case 'Popup closed by user':
+            setErrorMsg('Login window was closed, please try again.');
+            break
+        default:
+          setErrorMsg('Please ensure that your Credentials and Scope are correct and still valid.');
+          break;
+      }
        setHasError(true);
     } finally {
       setIsLoading(false);
@@ -161,8 +185,7 @@ const Auth: React.FC<{clientDetails : AuthConfig}> = ({clientDetails}) => {
             )}
             {(!!hasError ) && (
               <Alert icon={<IconAlertCircle size={16} />} title="Error! Unable to generate access token" color="red">
-                  Please ensure that your Credentials and Scope are correct and still valid.
-                  
+                  { errorMsg }
               </Alert>
             )}  
             

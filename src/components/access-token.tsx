@@ -8,6 +8,7 @@ import { MantineProvider } from "@mantine/core";
 function AccessToken(): React.ReactElement {
 
   const [clientId, setClientId] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
   const [scope, setScope] = useState("openid email profile ala/roles");
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,10 +18,15 @@ function AccessToken(): React.ReactElement {
   useEffect(() => {
     // check url param for app `step` and set the visibility of app client registration accordingly.
     const clientId = searchParams.get('client_id');
+    const clientSecret = searchParams.get('client_secret');
     const scope = searchParams.get('scope');
 
     if (clientId) {
       setClientId(clientId)
+    }
+
+    if (clientSecret){
+      setClientSecret(clientSecret)
     }
 
     if (scope) {
@@ -35,7 +41,7 @@ function AccessToken(): React.ReactElement {
   }, []);
 
   const clientDetails = (): AuthConfig => {
-    return { client_id: clientId, scope: scope, authority: config.authority, redirect_uri: config.redirect_uri, cognito_logout_uri: config.cognito_logout_uri, popup_post_logout_redirect_uri: config.popup_post_logout_redirect_uri }
+    return {client_id: clientId, client_secret: clientSecret, scope, authority: config.authority, redirect_uri: config.redirect_uri, cognito_logout_uri: config.cognito_logout_uri, popup_post_logout_redirect_uri: config.popup_post_logout_redirect_uri}
   }
 
   return (
